@@ -1,0 +1,5 @@
+{
+  "name": "Son1k-GO!",
+  "description": "A web application that simulates an automated deployment pipeline, allowing users to connect to GitHub, select a repository, configure, and deploy projects to Vercel or Railway with real-time status monitoring.",
+  "requestFramePermissions": []
+}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Automated Deployment Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <style>
+      /* For Webkit-based browsers (Chrome, Safari) */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: #171925;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: #15333B;
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: #15A4A2;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.29.0",
+    "highlight.js/": "https://aistudiocdn.com/highlight.js@^11.11.1/",
+    "highlight.js": "https://aistudiocdn.com/highlight.js@^11.11.1",
+    "vscode": "https://aistudiocdn.com/vscode@^1.1.37"
+  }
+}
+</script>
+</head>
+  <body class="bg-[#1C232E] text-white">
+    <div id="root"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
