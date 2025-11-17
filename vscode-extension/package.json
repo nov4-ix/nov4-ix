@@ -1,5 +1,6 @@
 {
   "name": "son1k-go",
+  "publisher": "your-publisher-name",
   "displayName": "Son1k-GO! AI Assistant",
   "description": "An AI-powered development assistant to modify and deploy GitHub repositories.",
   "version": "0.0.1",
