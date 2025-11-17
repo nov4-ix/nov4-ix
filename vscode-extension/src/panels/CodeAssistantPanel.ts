@@ -2,7 +2,7 @@
 
 import * as vscode from "vscode";
 import { getNonce } from "../utilities/getNonce";
-import { FileTreeItem, User, Repository, ProjectAnalysisFinding, RepoCleanupSuggestion } from "../../../types";
+import { FileTreeItem, User, Repository, ProjectAnalysisFinding, RepoCleanupSuggestion } from "../types";
 import { GoogleGenAI, Type } from "@google/genai";
 
 // --- Copied from services/ai.ts to be used on the extension side ---
@@ -185,20 +185,22 @@ export class CodeAssistantPanel {
           case 'gemini:generateCodeSuggestion': {
             try {
                 const { config, fileContent, userInstruction, fileName, fullFileTree, aiRules } = payload;
-                const ai = new GoogleGenAI(process.env.API_KEY as string);
-                const model = ai.getGenerativeModel({ model: config.model || 'gemini-pro' });
+                const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
 
                 const systemInstruction = generateSystemInstruction(fileName, fullFileTree, aiRules);
                 const prompt = `Original code from \`${fileName}\`:\n\`\`\`\n${fileContent}\n\`\`\`\n\nUser instruction: "${userInstruction}"\n\nPlease provide the full updated code for \`${fileName}\`.`;
 
-                const result = await model.generateContent({
-                    contents: [{ role: "user", parts: [{ text: prompt }] }],
-                    systemInstruction: { parts: [{ text: systemInstruction }] },
+                const response = await ai.models.generateContent({
+                    model: config.model || 'gemini-2.5-flash',
+                    contents: prompt,
+                    config: {
+                        systemInstruction,
+                    },
                 });
                 
-                const text = result.response.text();
+                const text = response.text;
                 if (typeof text !== 'string') {
-                    throw new Error("La respuesta de la IA no contenía texto válido.");
+                    throw new Error("La respuesta de la IA no contenía texto válido o fue bloqueada.");
                 }
                 respond(text.trim());
             } catch (e) {
@@ -237,8 +239,11 @@ export class CodeAssistantPanel {
                         }
                     }
                 });
-                const jsonStr = response.text.trim();
-                respond(JSON.parse(jsonStr) as ProjectAnalysisFinding[]);
+                const jsonStr = response.text;
+                if (typeof jsonStr !== 'string' || !jsonStr.trim()) {
+                    throw new Error("La respuesta JSON de la IA estaba vacía o no era válida.");
+                }
+                respond(JSON.parse(jsonStr.trim()) as ProjectAnalysisFinding[]);
             } catch (e) {
                 respond(null, `Error de Gemini API: ${(e as Error).message}`);
             }
@@ -260,7 +265,7 @@ export class CodeAssistantPanel {
 
                 const text = response.text;
                 if (typeof text !== 'string') {
-                    throw new Error("La respuesta de la IA no contenía texto válido.");
+                    throw new Error("La respuesta de la IA no contenía texto válido o fue bloqueada.");
                 }
                 respond(text.trim());
             } catch (e) {
@@ -276,7 +281,7 @@ export class CodeAssistantPanel {
                 const prompt = `Analyze the following file tree and identify unnecessary files...\nFile Tree:\n\`\`\`\n${fileTree}\n\`\`\`\nIf no files need to be deleted, return an empty array [].`;
 
                 const response = await ai.models.generateContent({
-                    model: config.model || 'gemini-2.5-flash',
+                    model: config.model || 'gemini-2.e5-flash',
                     contents: prompt,
                     config: {
                         systemInstruction,
@@ -291,8 +296,11 @@ export class CodeAssistantPanel {
                         }
                     }
                 });
-                const jsonStr = response.text.trim();
-                respond(JSON.parse(jsonStr) as RepoCleanupSuggestion[]);
+                const jsonStr = response.text;
+                if (typeof jsonStr !== 'string' || !jsonStr.trim()) {
+                    throw new Error("La respuesta JSON de la IA estaba vacía o no era válida.");
+                }
+                respond(JSON.parse(jsonStr.trim()) as RepoCleanupSuggestion[]);
             } catch (e) {
                 respond(null, `Error de Gemini API: ${(e as Error).message}`);
             }
